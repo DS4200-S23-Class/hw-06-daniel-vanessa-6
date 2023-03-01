@@ -92,7 +92,7 @@ d3.csv("data/iris.csv").then((data) => {
             .attr("cy", (d) => { return ((3 - parseFloat(d.Petal_Width)) * VIS_HEIGHT/3) + MARGINS.top; })
             .attr("fill", function(d,i) { return color[d.Species]; })
             .attr("r", 4)
-            .attr("opacity", 0.3)
+            .attr("opacity", 0.5)
 
             // Creating the interactions with both graphs: add highlight
             .on("mouseover", function(d, i) {
@@ -110,7 +110,7 @@ d3.csv("data/iris.csv").then((data) => {
             // Removes orange highlight
             .on("mouseout", function(d, i) {
                 d3.selectAll("circle.pt" + i["id"])
-                    .attr("opacity", 0.3)
+                    .attr("opacity", 0.5)
                     .attr("stroke", "none");
                 d3.selectAll("rect.bar" + i["Species"])
                     .attr("opacity", 0.3)
@@ -165,16 +165,16 @@ d3.csv("data/iris.csv").then((data) => {
         .ticks(10));
 
     const graph3 = g.selectAll("bars")
-                    .data(data)
-                    .enter()
-                    .append("rect")
-                        .attr("class", function(d) { return 'bar' + d.Species; })
-                        .attr("x", function(d) { return X_AXIS_SCALE3(d.Species); })
-                        .attr("y", Y_AXIS_SCALE3(50))
-                        .attr("width", X_AXIS_SCALE3.bandwidth())
-                        .attr("height", VIS_HEIGHT - Y_AXIS_SCALE3(50))
-                        .attr("fill", function(d) { return color[d.Species]; })
-                        .attr("opacity", 0.5);
+                            .data(data)
+                            .enter()
+                            .append("rect")
+                                .attr("class", function(d) { return 'bar' + d.Species; })
+                                .attr("x", function(d) { return X_AXIS_SCALE3(d.Species); })
+                                .attr("y", Y_AXIS_SCALE3(50))
+                                .attr("width", X_AXIS_SCALE3.bandwidth())
+                                .attr("height", VIS_HEIGHT - Y_AXIS_SCALE3(50))
+                                .attr("fill", function(d) { return color[d.Species]; })
+                                .attr("opacity", 0.3);
 
     function brushed(event) {
         const extent = event.selection;
