@@ -144,7 +144,7 @@ let yScale = d3.scaleLinear().range([VIS_HEIGHT, 0]);
 let g = FRAME3.append("g").attr("transform", "translate("+30+","+50+")");
 
 xScale.domain(['setosa', 'versicolor', 'virginica']);
-yScale.domain([0, 50]);
+yScale.domain([0, 60]);
 
 g.append("g").attr('transform', 'translate(0,'+VIS_HEIGHT+ ')').call(d3.axisBottom(xScale));
 
