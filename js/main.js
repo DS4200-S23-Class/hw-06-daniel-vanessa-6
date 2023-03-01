@@ -92,11 +92,19 @@ d3.csv("data/iris.csv").then((data) => {
                     .attr("stroke-width", "2")
                     .attr("opacity", 1)
                     .attr("stroke", "black")
+                d3.selectAll("rect.bar" + i["Species"])
+                    .attr("stroke-width", "3")
+                    .attr("opacity", 1)
+                    .attr("stroke", "orange")
             })
             .on("mouseout", function(d, i) {
                 d3.selectAll("circle.pt" + i["id"])
                     .attr("opacity", 0.5)
                     .attr("stroke", "none")
+                d3.selectAll("rect.bar" + i["Species"])
+                    .attr("opacity", 0.5)
+                    .attr("stroke", "none")
+
             });
 
     // Add axis to the graph: establish scale functions for x/y
@@ -153,11 +161,17 @@ g.append('g').call(d3.axisLeft(yScale).ticks(10));
 g.selectAll(".point")
     .data(data)
     .enter().append("rect")
-    .attr("class", "point")
+    .attr("class", function(d) { return 'bar' + d.species; })
     .attr("x", function(d) { return xScale(d.species); })
     .attr("y", function(d) { return yScale(d.value); })
     .attr("width", xScale.bandwidth())
-    .attr("height", function(d) { return VIS_HEIGHT - yScale(d.value); });
+    .attr("height", function(d) { return VIS_HEIGHT - yScale(d.value);})
+    .attr("fill", function(d) { return color[d.species]; })
+    .attr("opacity", 0.5)
+
+
+
+
 
 
 
