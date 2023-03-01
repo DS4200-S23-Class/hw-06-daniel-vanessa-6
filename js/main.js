@@ -123,3 +123,41 @@ d3.csv("data/iris.csv").then((data) => {
         .attr("font-size", "10px");
   
 });
+
+
+let data = [
+  { species: 'setosa', value: 50 },
+  { species: 'versicolor', value: 50 },
+  { species: 'virginica', value: 50 }
+];
+
+// Build frame of bar graph
+const FRAME3 = d3.select("#bargraph")
+                  .append("svg")
+                    .attr("width", FRAME_WIDTH)
+                    .attr("height", 700)
+                    .attr("class", "frame");
+
+let xScale = d3.scaleBand().range([0, VIS_WIDTH]).padding(0.4);
+let yScale = d3.scaleLinear().range([VIS_HEIGHT, 0]);
+
+let g = FRAME3.append("g").attr("transform", "translate("+30+","+50+")");
+
+xScale.domain(['setosa', 'versicolor', 'virginica']);
+yScale.domain([0, 50]);
+
+g.append("g").attr('transform', 'translate(0,'+VIS_HEIGHT+ ')').call(d3.axisBottom(xScale));
+
+g.append('g').call(d3.axisLeft(yScale).ticks(10));
+
+g.selectAll(".point")
+    .data(data)
+    .enter().append("rect")
+    .attr("class", "point")
+    .attr("x", function(d) { return xScale(d.species); })
+    .attr("y", function(d) { return yScale(d.value); })
+    .attr("width", xScale.bandwidth())
+    .attr("height", function(d) { return VIS_HEIGHT - yScale(d.value); });
+
+
+
