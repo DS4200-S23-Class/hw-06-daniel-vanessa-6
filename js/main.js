@@ -83,7 +83,7 @@ d3.csv("data/iris.csv").then((data) => {
             .attr("cy", (d) => { return ((3 - parseFloat(d.Petal_Width)) * VIS_HEIGHT/3) + MARGINS.top; })
             .attr("fill", function(d,i) { return color[d.Species]; })
             .attr("r", 4)
-            .attr("opacity", 0.5)
+            .attr("opacity", 0.3)
 
             // Creating the interactions with both graphs: add highlight
             .on("mouseover", function(d, i) {
@@ -101,7 +101,7 @@ d3.csv("data/iris.csv").then((data) => {
             // Removes orange highlight
             .on("mouseout", function(d, i) {
                 d3.selectAll("circle.pt" + i["id"])
-                    .attr("opacity", 0.5)
+                    .attr("opacity", 0.3)
                     .attr("stroke", "none")
             
 
