@@ -83,7 +83,7 @@ d3.csv("data/iris.csv").then((data) => {
             .attr("cy", (d) => { return ((3 - parseFloat(d.Petal_Width)) * VIS_HEIGHT/3) + MARGINS.top; })
             .attr("fill", function(d,i) { return color[d.Species]; })
             .attr("r", 4)
-            .attr("opacity", 0.5)
+            .attr("opacity", 0.3)
 
             // Creating the interactions with both graphs
             .on("mouseover", function(d, i) {
@@ -91,7 +91,7 @@ d3.csv("data/iris.csv").then((data) => {
                 d3.selectAll("circle.pt" + i["id"])
                     .attr("stroke-width", "2")
                     .attr("opacity", 1)
-                    .attr("stroke", "black")
+                    .attr("stroke", "orange")
                 d3.selectAll("rect.bar" + i["Species"])
                     .attr("stroke-width", "3")
                     .attr("opacity", 1)
@@ -99,7 +99,7 @@ d3.csv("data/iris.csv").then((data) => {
             })
             .on("mouseout", function(d, i) {
                 d3.selectAll("circle.pt" + i["id"])
-                    .attr("opacity", 0.5)
+                    .attr("opacity", 0.3)
                     .attr("stroke", "none")
                 d3.selectAll("rect.bar" + i["Species"])
                     .attr("opacity", 0.5)
