@@ -27,12 +27,12 @@ d3.csv("data/iris.csv").then((data) => {
         .data(data)
         .enter()
         .append("circle")
-            .attr("class", function(d,i) { console.log("pt" + d.id); return "pt" + d.id; })
+            .attr("class", function(d,i) { return "pt" + d.id + " point"; })
             // calculations for x: increases scale to be visible to user + margin adjustment
             .attr("cx", (d) => { return (parseFloat(d.Sepal_Length) * VIS_WIDTH/8) + MARGINS.left; })
             // calculations for y: increases scale, considers our perception of x/y plane, margins
             .attr("cy", (d) => { return ((7 - parseFloat(d.Petal_Length)) * VIS_HEIGHT/8) + MARGINS.top; })
-            .attr("fill", function(d,i) { console.log(d.Species, color[d.Species]); return color[d.Species]; })
+            .attr("fill", function(d,i) { return color[d.Species]; })
             .attr("r", 4)
             .attr("opacity", 0.5);
 
@@ -76,7 +76,7 @@ d3.csv("data/iris.csv").then((data) => {
         .data(data)
         .enter()
         .append("circle")
-            .attr("class", function(d,i) { return "pt" + d.id; })
+            .attr("class", function(d,i) { return "pt" + d.id + " point"; })
             // calculations for x: increases scale to be visible to user + margin adjustment
             .attr("cx", (d) => { return (parseFloat(d.Sepal_Width) * VIS_WIDTH/5) + MARGINS.left; })
             // calculations for y: increases scale, considers our perception of x/y plane, margins
@@ -85,25 +85,29 @@ d3.csv("data/iris.csv").then((data) => {
             .attr("r", 4)
             .attr("opacity", 0.5)
 
-            // Creating the interactions with both graphs
+            // Creating the interactions with both graphs: add highlight
             .on("mouseover", function(d, i) {
                 console.log(i["Species"])
                 d3.selectAll("circle.pt" + i["id"])
                     .attr("stroke-width", "2")
                     .attr("opacity", 1)
-                    .attr("stroke", "black")
+                    .attr("stroke", "orange")
                 d3.selectAll("rect.bar" + i["Species"])
                     .attr("stroke-width", "3")
                     .attr("opacity", 1)
                     .attr("stroke", "orange")
             })
+
+            // Removes orange highlight
             .on("mouseout", function(d, i) {
                 d3.selectAll("circle.pt" + i["id"])
                     .attr("opacity", 0.5)
                     .attr("stroke", "none")
+            
+
                 d3.selectAll("rect.bar" + i["Species"])
                     .attr("opacity", 0.5)
-                    .attr("stroke", "none")
+                    .attr("stroke", "none")})
 
             });
 
@@ -129,8 +133,36 @@ d3.csv("data/iris.csv").then((data) => {
         "," + MARGINS.top + ")")
         .call(d3.axisLeft(Y_AXIS_SCALE).ticks(3))
         .attr("font-size", "10px");
-  
-});
+
+    const brush = d3.brush()
+        .extent([[MARGINS.right, MARGINS.top], [FRAME_WIDTH - MARGINS.left, FRAME_HEIGHT - MARGINS.bottom]])
+        .on("start brush", brushed);
+      
+    FRAME2.append("g")
+        .attr("class", "brush")
+        .call(brush);
+      
+    // Define event listener
+    function brushed(event) {
+        if (event.selection) {
+          const [x0, y0] = event.selection[0];
+          const [x1, y1] = event.selection[1];
+          // Update visualization based on selected data
+      
+          // Highlight selected points
+          FRAME2.selectAll(".point")
+            .classed("selected", d => {
+              const cx = (d.Sepal_Width * VIS_WIDTH/5) + MARGINS.left;
+              const cy = ((3 - d.Petal_Width) * VIS_HEIGHT/3) + MARGINS.top;
+              console.log(cx, cy)
+              return cx >= x0 && cx <= x1 && cy >= y0 && cy <= y1;
+            });
+        } else {
+          // Reset all points to default style
+          FRAME2.selectAll(".point")
+            .classed("selected", false);
+        }
+      };
 
 
 let data = [

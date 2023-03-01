@@ -20,3 +20,9 @@ h1, h2 {
     padding: 10px;
     flex: 1;
 }
+
+/* Set highlight for selected columns */
+.selected {
+    stroke: orange;
+    stroke-width: 2px;
+}
