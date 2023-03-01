@@ -23,6 +23,7 @@ h1, h2 {
 
 /* Set highlight for selected columns */
 .selected {
+    opacity: 1;
     stroke: orange;
     stroke-width: 2px;
 }

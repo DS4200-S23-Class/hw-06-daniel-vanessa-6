@@ -19,11 +19,33 @@ const FRAME1 = d3.select("#scatter1")
                     .attr("height", FRAME_HEIGHT)
                     .attr("class", "frame");
 
+// Build frame of scatterplot2
+const FRAME2 = d3.select("#scatter2")
+                  .append("svg")
+                    .attr("width", FRAME_WIDTH)
+                    .attr("height", FRAME_HEIGHT)
+                    .attr("class", "frame");
+
+
+// Hard code bar graph data
+const bar_data = [
+    { species: 'setosa', value: 50 },
+    { species: 'versicolor', value: 50 },
+    { species: 'virginica', value: 50 }
+];
+                      
+// Build frame of bar graph
+const FRAME3 = d3.select("#bargraph")
+                    .append("svg")
+                        .attr("width", FRAME_WIDTH)
+                        .attr("height", 700)
+                        .attr("class", "frame");
+
 // Load the data from the CSV file
 d3.csv("data/iris.csv").then((data) => {
 
     // Create the scatterplot points
-    FRAME1.selectAll("points")
+    const graph1 = FRAME1.selectAll("points")
         .data(data)
         .enter()
         .append("circle")
@@ -37,11 +59,11 @@ d3.csv("data/iris.csv").then((data) => {
             .attr("opacity", 0.5);
 
     // Add axis to the graph: establish scale functions for x/y
-    const X_AXIS_SCALE = d3.scaleLinear()
+    const X_AXIS_SCALE1 = d3.scaleLinear()
         .domain([0, 8])
         .range([0, VIS_WIDTH]);
 
-    const Y_AXIS_SCALE = d3.scaleLinear()
+    const Y_AXIS_SCALE1 = d3.scaleLinear()
         .domain([0, 7])
         .range([VIS_HEIGHT, 0]);
 
@@ -49,30 +71,19 @@ d3.csv("data/iris.csv").then((data) => {
     FRAME1.append("g")
         .attr("transform", "translate(" + MARGINS.left + 
         "," + (VIS_HEIGHT + MARGINS.top) + ")") 
-        .call(d3.axisBottom(X_AXIS_SCALE).ticks(8)) 
+        .call(d3.axisBottom(X_AXIS_SCALE1).ticks(8)) 
         .attr("font-size", "10px"); 
 
     // Add y-axis
     FRAME1.append("g")
         .attr("transform", "translate(" + MARGINS.left +
         "," + MARGINS.top + ")")
-        .call(d3.axisLeft(Y_AXIS_SCALE).ticks(7))
+        .call(d3.axisLeft(Y_AXIS_SCALE1).ticks(7))
         .attr("font-size", "10px");
-  
-});
 
-// Build frame of scatterplot2
-const FRAME2 = d3.select("#scatter2")
-                  .append("svg")
-                    .attr("width", FRAME_WIDTH)
-                    .attr("height", FRAME_HEIGHT)
-                    .attr("class", "frame");
-
-// Load the data from the CSV file
-d3.csv("data/iris.csv").then((data) => {
 
     // Create the scatterplot points
-    FRAME2.selectAll("points")
+    const graph2 = FRAME2.selectAll("points")
         .data(data)
         .enter()
         .append("circle")
@@ -87,36 +98,32 @@ d3.csv("data/iris.csv").then((data) => {
 
             // Creating the interactions with both graphs: add highlight
             .on("mouseover", function(d, i) {
-                console.log(i["Species"])
+                console.log(i["Species"]);
                 d3.selectAll("circle.pt" + i["id"])
                     .attr("stroke-width", "2")
                     .attr("opacity", 1)
-                    .attr("stroke", "orange")
+                    .attr("stroke", "orange");
                 d3.selectAll("rect.bar" + i["Species"])
                     .attr("stroke-width", "3")
                     .attr("opacity", 1)
-                    .attr("stroke", "orange")
+                    .attr("stroke", "orange");
             })
 
             // Removes orange highlight
             .on("mouseout", function(d, i) {
                 d3.selectAll("circle.pt" + i["id"])
                     .attr("opacity", 0.3)
-                    .attr("stroke", "none")
-            
-
+                    .attr("stroke", "none");
                 d3.selectAll("rect.bar" + i["Species"])
                     .attr("opacity", 0.5)
-                    .attr("stroke", "none")})
-
-            });
+                    .attr("stroke", "none")});
 
     // Add axis to the graph: establish scale functions for x/y
-    const X_AXIS_SCALE = d3.scaleLinear()
+    const X_AXIS_SCALE2 = d3.scaleLinear()
         .domain([0, 5])
         .range([0, VIS_WIDTH]);
 
-    const Y_AXIS_SCALE = d3.scaleLinear()
+    const Y_AXIS_SCALE2 = d3.scaleLinear()
         .domain([0, 3])
         .range([VIS_HEIGHT, 0]);
 
@@ -124,86 +131,77 @@ d3.csv("data/iris.csv").then((data) => {
     FRAME2.append("g")
         .attr("transform", "translate(" + MARGINS.left + 
         "," + (VIS_HEIGHT + MARGINS.top) + ")") 
-        .call(d3.axisBottom(X_AXIS_SCALE).ticks(5)) 
+        .call(d3.axisBottom(X_AXIS_SCALE2).ticks(5)) 
         .attr("font-size", "10px"); 
 
     // Add y-axis
     FRAME2.append("g")
         .attr("transform", "translate(" + MARGINS.left +
         "," + MARGINS.top + ")")
-        .call(d3.axisLeft(Y_AXIS_SCALE).ticks(3))
+        .call(d3.axisLeft(Y_AXIS_SCALE2).ticks(3))
         .attr("font-size", "10px");
 
     const brush = d3.brush()
         .extent([[MARGINS.right, MARGINS.top], [FRAME_WIDTH - MARGINS.left, FRAME_HEIGHT - MARGINS.bottom]])
         .on("start brush", brushed);
       
-    FRAME2.append("g")
-        .attr("class", "brush")
-        .call(brush);
-      
-    // Define event listener
+    FRAME2.call(brush);
+
+
+
+    // code for creating bar graph
+    const X_AXIS_SCALE3 = d3.scaleBand()
+                            .range([0, VIS_WIDTH])
+                            .padding(0.4);
+    const Y_AXIS_SCALE3 = d3.scaleLinear()
+                            .range([VIS_HEIGHT, 0]);
+
+    const g = FRAME3.append("g")
+                    .attr("transform", "translate("+30+","+50+")");
+
+    X_AXIS_SCALE3.domain(['setosa', 'versicolor', 'virginica']);
+    Y_AXIS_SCALE3.domain([0, 60]);
+
+    g.append("g")
+        .attr('transform', 'translate(0,'+VIS_HEIGHT+ ')')
+        .call(d3.axisBottom(X_AXIS_SCALE3));
+
+    g.append('g')
+        .call(d3.axisLeft(Y_AXIS_SCALE3)
+        .ticks(10));
+
+    const graph3 = g.selectAll("bars")
+                    .data(bar_data)
+                    .enter()
+                    .append("rect")
+                        .attr("class", function(d) { return 'bar' + d.species; })
+                        .attr("x", function(d) { return X_AXIS_SCALE3(d.species); })
+                        .attr("y", function(d) { return Y_AXIS_SCALE3(d.value); })
+                        .attr("width", X_AXIS_SCALE3.bandwidth())
+                        .attr("height", function(d) { return VIS_HEIGHT - Y_AXIS_SCALE3(d.value);})
+                        .attr("fill", function(d) { return color[d.species]; })
+                        .attr("opacity", 0.5);
+
     function brushed(event) {
-        if (event.selection) {
-          const [x0, y0] = event.selection[0];
-          const [x1, y1] = event.selection[1];
-          // Update visualization based on selected data
-      
-          // Highlight selected points
-          FRAME2.selectAll(".point")
-            .classed("selected", d => {
-              const cx = (d.Sepal_Width * VIS_WIDTH/5) + MARGINS.left;
-              const cy = ((3 - d.Petal_Width) * VIS_HEIGHT/3) + MARGINS.top;
-              console.log(cx, cy)
-              return cx >= x0 && cx <= x1 && cy >= y0 && cy <= y1;
-            });
-        } else {
-          // Reset all points to default style
-          FRAME2.selectAll(".point")
-            .classed("selected", false);
-        }
-      };
+        const extent = event.selection;
+        graph1.classed("selected", function(d){ return isBrushed(extent, X_AXIS_SCALE2(d.Sepal_Width) + MARGINS.left, Y_AXIS_SCALE2(d.Petal_Width) + MARGINS.top ); } )
+        graph2.classed("selected", function(d){ return isBrushed(extent, X_AXIS_SCALE2(d.Sepal_Width) + MARGINS.left, Y_AXIS_SCALE2(d.Petal_Width) + MARGINS.top ); } )
+        graph3.classed("selected", barCheck)
+    };
+        
+        // Returns TRUE if a point is in the selection window, returns FALSE if it is not
+    function isBrushed(brush_coords, cx, cy) {
+        let x0 = brush_coords[0][0],
+            x1 = brush_coords[1][0],
+            y0 = brush_coords[0][1],
+            y1 = brush_coords[1][1];
+        bool = x0 <= cx && cx <= x1 && y0 <= cy && cy <= y1
+        console.log(bool)
+        return bool;    // indicates which points are in the selection window via booleans
+    };
 
 
-let data = [
-  { species: 'setosa', value: 50 },
-  { species: 'versicolor', value: 50 },
-  { species: 'virginica', value: 50 }
-];
-
-// Build frame of bar graph
-const FRAME3 = d3.select("#bargraph")
-                  .append("svg")
-                    .attr("width", FRAME_WIDTH)
-                    .attr("height", 700)
-                    .attr("class", "frame");
-
-let xScale = d3.scaleBand().range([0, VIS_WIDTH]).padding(0.4);
-let yScale = d3.scaleLinear().range([VIS_HEIGHT, 0]);
-
-let g = FRAME3.append("g").attr("transform", "translate("+30+","+50+")");
-
-xScale.domain(['setosa', 'versicolor', 'virginica']);
-yScale.domain([0, 60]);
-
-g.append("g").attr('transform', 'translate(0,'+VIS_HEIGHT+ ')').call(d3.axisBottom(xScale));
-
-g.append('g').call(d3.axisLeft(yScale).ticks(10));
-
-g.selectAll(".point")
-    .data(data)
-    .enter().append("rect")
-    .attr("class", function(d) { return 'bar' + d.species; })
-    .attr("x", function(d) { return xScale(d.species); })
-    .attr("y", function(d) { return yScale(d.value); })
-    .attr("width", xScale.bandwidth())
-    .attr("height", function(d) { return VIS_HEIGHT - yScale(d.value);})
-    .attr("fill", function(d) { return color[d.species]; })
-    .attr("opacity", 0.5)
-
-
-
-
+});
 
 
 
