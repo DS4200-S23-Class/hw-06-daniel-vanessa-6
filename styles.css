@@ -25,5 +25,5 @@ h1, h2 {
 .selected {
     opacity: 1;
     stroke: orange;
-    stroke-width: 2px;
+    stroke-width: 15px;
 }

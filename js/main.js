@@ -25,14 +25,6 @@ const FRAME2 = d3.select("#scatter2")
                     .attr("width", FRAME_WIDTH)
                     .attr("height", FRAME_HEIGHT)
                     .attr("class", "frame");
-
-
-// Hard code bar graph data
-const bar_data = [
-    { species: 'setosa', value: 50 },
-    { species: 'versicolor', value: 50 },
-    { species: 'virginica', value: 50 }
-];
                       
 // Build frame of bar graph
 const FRAME3 = d3.select("#bargraph")
@@ -81,6 +73,12 @@ d3.csv("data/iris.csv").then((data) => {
         .call(d3.axisLeft(Y_AXIS_SCALE1).ticks(7))
         .attr("font-size", "10px");
 
+    const brush = d3.brush()
+        .extent([[MARGINS.right, MARGINS.top], [FRAME_WIDTH - MARGINS.left, FRAME_HEIGHT - MARGINS.bottom]])
+        .on("start brush end", brushed);
+      
+    FRAME2.call(brush);
+
 
     // Create the scatterplot points
     const graph2 = FRAME2.selectAll("points")
@@ -100,11 +98,11 @@ d3.csv("data/iris.csv").then((data) => {
             .on("mouseover", function(d, i) {
                 console.log(i["Species"]);
                 d3.selectAll("circle.pt" + i["id"])
-                    .attr("stroke-width", "2")
+                    .attr("stroke-width", "2px")
                     .attr("opacity", 1)
                     .attr("stroke", "orange");
                 d3.selectAll("rect.bar" + i["Species"])
-                    .attr("stroke-width", "3")
+                    .attr("stroke-width", "5px")
                     .attr("opacity", 1)
                     .attr("stroke", "orange");
             })
@@ -115,7 +113,7 @@ d3.csv("data/iris.csv").then((data) => {
                     .attr("opacity", 0.3)
                     .attr("stroke", "none");
                 d3.selectAll("rect.bar" + i["Species"])
-                    .attr("opacity", 0.5)
+                    .attr("opacity", 0.3)
                     .attr("stroke", "none")});
 
     // Add axis to the graph: establish scale functions for x/y
@@ -141,11 +139,7 @@ d3.csv("data/iris.csv").then((data) => {
         .call(d3.axisLeft(Y_AXIS_SCALE2).ticks(3))
         .attr("font-size", "10px");
 
-    const brush = d3.brush()
-        .extent([[MARGINS.right, MARGINS.top], [FRAME_WIDTH - MARGINS.left, FRAME_HEIGHT - MARGINS.bottom]])
-        .on("start brush", brushed);
-      
-    FRAME2.call(brush);
+    
 
 
 
@@ -171,33 +165,46 @@ d3.csv("data/iris.csv").then((data) => {
         .ticks(10));
 
     const graph3 = g.selectAll("bars")
-                    .data(bar_data)
+                    .data(data)
                     .enter()
                     .append("rect")
-                        .attr("class", function(d) { return 'bar' + d.species; })
-                        .attr("x", function(d) { return X_AXIS_SCALE3(d.species); })
-                        .attr("y", function(d) { return Y_AXIS_SCALE3(d.value); })
+                        .attr("class", function(d) { return 'bar' + d.Species; })
+                        .attr("x", function(d) { return X_AXIS_SCALE3(d.Species); })
+                        .attr("y", Y_AXIS_SCALE3(50))
                         .attr("width", X_AXIS_SCALE3.bandwidth())
-                        .attr("height", function(d) { return VIS_HEIGHT - Y_AXIS_SCALE3(d.value);})
-                        .attr("fill", function(d) { return color[d.species]; })
+                        .attr("height", VIS_HEIGHT - Y_AXIS_SCALE3(50))
+                        .attr("fill", function(d) { return color[d.Species]; })
                         .attr("opacity", 0.5);
 
     function brushed(event) {
         const extent = event.selection;
-        graph1.classed("selected", function(d){ return isBrushed(extent, X_AXIS_SCALE2(d.Sepal_Width) + MARGINS.left, Y_AXIS_SCALE2(d.Petal_Width) + MARGINS.top ); } )
-        graph2.classed("selected", function(d){ return isBrushed(extent, X_AXIS_SCALE2(d.Sepal_Width) + MARGINS.left, Y_AXIS_SCALE2(d.Petal_Width) + MARGINS.top ); } )
-        graph3.classed("selected", barCheck)
+        console.log(extent)
+        graph1.classed("selected", function(d){ 
+            return isBrushed(extent, X_AXIS_SCALE2(d.Sepal_Width) + MARGINS.left, 
+                                    Y_AXIS_SCALE2(d.Petal_Width) + MARGINS.top ); 
+        });
+        graph2.classed("selected", function(d){ 
+            return isBrushed(extent, X_AXIS_SCALE2(d.Sepal_Width) + MARGINS.left, 
+                                    Y_AXIS_SCALE2(d.Petal_Width) + MARGINS.top ); 
+        });
+        graph3.classed("selected", function(d, i) {
+            return isBrushed(extent, X_AXIS_SCALE2(d.Sepal_Width) + MARGINS.left, 
+                                    Y_AXIS_SCALE2(d.Petal_Width) + MARGINS.top );
+        });
     };
-        
-        // Returns TRUE if a point is in the selection window, returns FALSE if it is not
+
     function isBrushed(brush_coords, cx, cy) {
+
         let x0 = brush_coords[0][0],
             x1 = brush_coords[1][0],
             y0 = brush_coords[0][1],
             y1 = brush_coords[1][1];
-        bool = x0 <= cx && cx <= x1 && y0 <= cy && cy <= y1
+
+        const bool = x0 <= cx && cx <= x1 && 
+                        y0 <= cy && cy <= y1;
+                        
         console.log(bool)
-        return bool;    // indicates which points are in the selection window via booleans
+        return bool;   
     };
 
 
